@@ -272,12 +272,43 @@ namespace basic_cryptography
             }
             return cipherstring;
         }
+        public static string DecryptCaesar(int Key, string CipherText)
+        {
+            CipherText = CipherText.ToUpper();
+            char[] char_text = CipherText.ToCharArray();
+            int i = 0;
+            int end = 90;
+            int result = 0;
+            int buf = 0;
+            for (i = 0; i < char_text.Length; i++)
+            {
+                buf = (int)char_text[i];
+                if ((buf - Key) < 65)
+                {
+                    result = (buf - Key) + (end - 65) + 1;
+                    char_text[i] = (char)result;
+                }
+                else
+                {
+                    result = buf - Key;
+                    char_text[i] = (char)result;
+                }
+
+            }
+            string sourcetext = "";
+            for (i = 0; i < char_text.Length; i++)
+            {
+                sourcetext += char_text[i];
+            }
+            return sourcetext;
+        }
     }
     public class Program : BasicCryptographies
     {
         static void Main()
         {
-            Console.WriteLine(EncryptCaesar(10, "ABCDEFGHIKLMNOPQRSTVXYZ"));
+            Console.WriteLine(EncryptCaesar(3, "ILOVEYOU"));
+            Console.WriteLine(DecryptCaesar(3, "loryhbrx"));
         }
     }    
 }
