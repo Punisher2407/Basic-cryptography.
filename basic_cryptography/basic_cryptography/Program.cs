@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace basic_cryptography
 {
-    public class Permutation
+    public class BasicCryptographies
     {
         public string source_text = "";
         public int key = 0;
@@ -242,23 +242,42 @@ namespace basic_cryptography
             sourcetext = sourcetext.ToUpper();
             return sourcetext;
         }
+        public static string EncryptCaesar(int Key, string SourceText)
+        {
+            SourceText = SourceText.ToUpper();
+            char[] char_text = SourceText.ToCharArray();
+            int i = 0;
+            int start = 65;
+            int result = 0;
+            int buf = 0;
+            for (i = 0; i < char_text.Length; i++)
+            {
+                buf = (int)char_text[i];
+                if ((Key + buf) > 90)
+                {
+                    result = (Key + buf) - (90 - start) - 1;
+                    char_text[i] = (char)result;
+                }
+                else
+                {
+                    result = buf + Key;
+                    char_text[i] = (char)result;
+                }
+                
+            }
+            string cipherstring = "";
+            for (i = 0; i < char_text.Length; i++)
+            {
+                cipherstring += char_text[i];
+            }
+            return cipherstring;
+        }
     }
-    public class Program : Permutation
-    { 
+    public class Program : BasicCryptographies
+    {
         static void Main()
         {
-            Permutation test1 = new Permutation();
-            Console.Write("Source text: ");
-            test1.source_text = Console.ReadLine();
-            Console.Write("Key:");
-            test1.str_key = Console.ReadLine();
-            Console.WriteLine("Ciphertext: {0}", EncryptColumn(test1.str_key, test1.source_text));
-            Permutation test2 = new Permutation();
-            Console.Write("Source text: ");
-            test2.source_text = Console.ReadLine();
-            Console.Write("Key:");
-            test2.str_key = Console.ReadLine();
-            Console.WriteLine("Text: {0}", DecryptColumn(test2.str_key, test2.source_text));
+            Console.WriteLine(EncryptCaesar(10, "ABCDEFGHIKLMNOPQRSTVXYZ"));
         }
     }    
 }
