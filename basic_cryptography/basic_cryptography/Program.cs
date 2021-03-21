@@ -192,6 +192,56 @@ namespace basic_cryptography
             ciphertext = ciphertext.ToUpper();
             return ciphertext;
         }
+        public static string DecryptColumn(string Key, string CipherText)
+        {
+            int rowsCount = (int)Math.Ceiling((double)CipherText.Length / Key.Length);
+            char[,] sourcematrix = new char[rowsCount, Key.Length];
+            int i = 0, j = 0, z = 0;
+            int emptyCells = rowsCount * Key.Length - CipherText.Length;
+            if (emptyCells != 0)
+            {
+                for (j = CipherText.Length % Key.Length; j < Key.Length; j++)
+                {
+                    sourcematrix[rowsCount - 1, j] = '\f';
+                }
+            }
+
+            int indexString = CipherText.Length - 1;
+            int index = 0;
+            for (j = 0; j < Key.Length; j++)
+            {
+                index = 0;
+                for (z = 1; z <= Key.Length - 1; z++)
+                {
+                    if (Convert.ToInt32(Key[z]) >= Convert.ToUInt32(Key[index]))
+                    {
+                        index = z;
+                    }
+                }
+                Key = Key.Remove(index, 1).Insert(index, "\f");
+                for (i = rowsCount - 1; i >= 0; i--)
+                {
+                    if (sourcematrix[i, index] != '\f')
+                    {
+                        sourcematrix[i, index] = CipherText[indexString--];
+                    }
+                }
+            }
+
+            string sourcetext = "";
+            for (i = 0; i < rowsCount; i++)
+            {
+                for (j = 0; j < Key.Length; j++)
+                {
+                    if (sourcematrix[i, j] != '\f')
+                    {
+                        sourcetext += sourcematrix[i, j];
+                    }
+                }
+            }
+            sourcetext = sourcetext.ToUpper();
+            return sourcetext;
+        }
     }
     public class Program : Permutation
     { 
@@ -203,6 +253,12 @@ namespace basic_cryptography
             Console.Write("Key:");
             test1.str_key = Console.ReadLine();
             Console.WriteLine("Ciphertext: {0}", EncryptColumn(test1.str_key, test1.source_text));
+            Permutation test2 = new Permutation();
+            Console.Write("Source text: ");
+            test2.source_text = Console.ReadLine();
+            Console.Write("Key:");
+            test2.str_key = Console.ReadLine();
+            Console.WriteLine("Text: {0}", DecryptColumn(test2.str_key, test2.source_text));
         }
     }    
 }
