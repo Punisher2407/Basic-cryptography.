@@ -11,7 +11,9 @@ namespace basic_cryptography
     {
         public string source_text = "";
         public int key = 0;
-        public string EncryptRailwayFence(int Key, string SourceText)
+        public string str_key = "";
+
+        public static string EncryptRailwayFence(int Key, string SourceText)
         {
             bool goDown = false;
             int row = 0, column = 0;
@@ -59,7 +61,7 @@ namespace basic_cryptography
             ciphertext = ciphertext.ToUpper();
             return ciphertext;
         }
-        public string DecryptRailwayFence(int Key, string CipherText)
+        public static string DecryptRailwayFence(int Key, string CipherText)
         {
             char[,] Fence = new char[Key, CipherText.Length];
             bool goDown = false;
@@ -123,29 +125,84 @@ namespace basic_cryptography
             sourcetext = sourcetext.ToUpper();
             return sourcetext;
         }
+        public static string EncryptColumn(string Key, string SourceText)
+        {
+            int rowsCount = (int)Math.Ceiling((double)SourceText.Length / Key.Length) + 1;
+            char[,] sourcematrix = new char[rowsCount, Key.Length];
+            int index, value = Key.Length;
+            int i = 0, j = 0;
 
+            for (i = 0; i < Key.Length; i++)
+            {
+                index = 0;
+                for (j = 1; j <= Key.Length - 1; j++)
+                {
+                    if (Convert.ToInt32(Key[j]) >= Convert.ToUInt32(Key[index]))
+                    {
+                        index = j;
+                    }
+                }
+                sourcematrix[0, index] = Convert.ToChar(value);
+                Key = Key.Remove(index, 1).Insert(index, "\f");
+                value--;
+            }
+
+            index = 0;
+            for (i = 1; i < rowsCount; i++)
+            {
+                for (j = 0; j < Key.Length; j++)
+                {
+                    if (index < SourceText.Length)
+                        sourcematrix[i, j] = SourceText[index++];
+                    else
+                        sourcematrix[i, j] = '\f';
+                }
+            }
+
+            int z = Key.Length - 1;
+            char min;
+            while (z > 0)
+            {
+                index = 0;
+                for (j = 1; j <= z; j++)
+                {
+                    if (Convert.ToUInt32(sourcematrix[0, j]) > Convert.ToUInt32(sourcematrix[0, index]))
+                        index = j;
+                }
+
+                for (i = 0; i < rowsCount; i++)
+                {
+                    min = sourcematrix[i, index];
+                    sourcematrix[i, index] = sourcematrix[i, z];
+                    sourcematrix[i, z] = min;
+                }
+
+                z -= 1;
+            }
+
+            string ciphertext = "";
+            for (j = 0; j < Key.Length; j++)
+            {
+                for (i = 1; i < rowsCount; i++)
+                {
+                    if (sourcematrix[i, j] != '\f')
+                        ciphertext += sourcematrix[i, j];
+                }
+            }
+            ciphertext = ciphertext.ToUpper();
+            return ciphertext;
+        }
     }
-    public class Program
+    public class Program : Permutation
     { 
         static void Main()
         {
-            // test encrypt- 1, Telecommunication
-            Console.WriteLine("'Railway fence'");
-            Permutation RailwayFence = new Permutation();
+            Permutation test1 = new Permutation();
             Console.Write("Source text: ");
-            RailwayFence.source_text = Console.ReadLine();
-            Console.Write("Input key: ");
-            RailwayFence.key = Convert.ToInt32(Console.ReadLine());
-            Console.WriteLine("Ciphertext: {0}", RailwayFence.EncryptRailwayFence(RailwayFence.key, RailwayFence.source_text));
-            // test decrypt
-            Console.WriteLine();
-            Permutation DRailwayFence = new Permutation();
-            Console.Write("Ciphertext: ");
-            DRailwayFence.source_text = Console.ReadLine();
-            Console.Write("Input key: ");
-            DRailwayFence.key = Convert.ToInt32(Console.ReadLine());
-            Console.WriteLine("Text: {0}", DRailwayFence.DecryptRailwayFence(DRailwayFence.key, DRailwayFence.source_text));
-            
+            test1.source_text = Console.ReadLine();
+            Console.Write("Key:");
+            test1.str_key = Console.ReadLine();
+            Console.WriteLine("Ciphertext: {0}", EncryptColumn(test1.str_key, test1.source_text));
         }
     }    
 }
