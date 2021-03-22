@@ -255,7 +255,7 @@ namespace basic_cryptography
                 buf = (int)char_text[i];
                 if ((Key + buf) > 90)
                 {
-                    result = (Key + buf) - (90 - start) - 1;
+                    result = (Key + buf) - ('Z' - start) - 1;
                     char_text[i] = (char)result;
                 }
                 else
@@ -285,7 +285,7 @@ namespace basic_cryptography
                 buf = (int)char_text[i];
                 if ((buf - Key) < 65)
                 {
-                    result = (buf - Key) + (end - 65) + 1;
+                    result = (buf - Key) + (end - 'A') + 1;
                     char_text[i] = (char)result;
                 }
                 else
